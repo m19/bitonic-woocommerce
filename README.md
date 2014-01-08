@@ -1,4 +1,4 @@
-bitonic-woocommerce
+Bitonic Woocommerce
 ===================
 
 Bitonic.nl payment gateway for Woocommerce
