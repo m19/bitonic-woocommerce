@@ -1,0 +1,13 @@
+{
+    "name": "m19/bitonic_woocommerce",
+    "description": "Bitonic Woocommerce plugin",
+    "authors": [
+        {
+            "name": "Martijn Buurman",
+            "email": "martijn@m19.nl"
+        }
+    ],
+    "require": {
+        "guzzle/guzzle": "~3.7"
+    }
+}
