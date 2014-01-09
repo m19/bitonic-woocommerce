@@ -6,7 +6,7 @@
  * Version: 0.1
  * Author: Martijn Buurman
  * Author URI: http://m19.nl
- * License: whateveruwant
+ * License: WTFPL http://www.wtfpl.net/
  */
 
 /**

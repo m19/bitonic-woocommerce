@@ -25,6 +25,8 @@ class BitonicApiWrapper {
 
         $response = $request->send()->json();
 
+
+
         return $response;
     }
 
