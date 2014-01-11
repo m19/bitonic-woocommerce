@@ -110,7 +110,7 @@ if ( in_array( 'woocommerce/woocommerce.php', apply_filters( 'active_plugins', g
 
                 // options for the API call
                 $options = array(
-                    'description' => get_bloginfo('name') . 'order #' . $order->id,
+                    'description' => get_bloginfo('name') . ' order #' . $order->id,
                     'return_url' => $redirect,
                     'report_url' => $report_url,
                     'euro' => $order->order_total * 100
