@@ -10,7 +10,7 @@ if ( in_array( 'woocommerce/woocommerce.php', apply_filters( 'active_plugins', g
 
             require 'bitonic-api-wrapper.php';
 
-            $bitonic = new BitonicApiWrapper();
+            $bitonic = new BitonicApiWrapper($this->get_option('merchant_key'));
 
             $transaction_id = $_GET['transaction_id'];
 
