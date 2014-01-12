@@ -3,10 +3,10 @@
  * Plugin Name: Bitonic Woocommerce
  * Plugin URI: https://github.com/m19/bitonic-woocommerce
  * Description: Bitonic payments for Woocommerce
- * Version: 0.1
+ * Version: 1.0
  * Author: Martijn Buurman
  * Author URI: http://m19.nl
- * License: WTFPL http://www.wtfpl.net/
+ * License: GPL2 http://www.gnu.org/licenses/old-licenses/gpl-2.0.html
  */
 
 /**
