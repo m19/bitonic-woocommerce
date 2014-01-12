@@ -1,7 +1,7 @@
 <?php
 /**
  * Plugin Name: Bitonic Woocommerce
- * Plugin URI: http://bitonic.nl
+ * Plugin URI: https://github.com/m19/bitonic-woocommerce
  * Description: Bitonic payments for Woocommerce
  * Version: 0.1
  * Author: Martijn Buurman
@@ -21,7 +21,11 @@ if ( in_array( 'woocommerce/woocommerce.php', apply_filters( 'active_plugins', g
             return;
         }
 
+        require 'bitonic-api-wrapper.php';
+
         class WC_Bitonic extends WC_Payment_Gateway {
+
+            protected $bitonic;
 
             public function __construct()
             {
@@ -34,6 +38,8 @@ if ( in_array( 'woocommerce/woocommerce.php', apply_filters( 'active_plugins', g
 
                 $this->title = $this->settings['title'];
                 $this->description = $this->settings['description'];
+
+                $this->bitonic = new BitonicApiWrapper($this->get_option('merchant_key'));
 
                 add_action('woocommerce_update_options_payment_gateways_'.$this->id, array(&$this, 'process_admin_options'));
 
@@ -92,11 +98,8 @@ if ( in_array( 'woocommerce/woocommerce.php', apply_filters( 'active_plugins', g
             }
 
             function process_payment($order_id) {
-                require 'bitonic-api-wrapper.php';
 
                 global $woocommerce;
-
-                $bitonic = new BitonicApiWrapper($this->get_option('merchant_key'));
 
                 $order = new WC_Order($order_id);
                 // Mark as on-hold (we're awaiting the coins)
@@ -117,7 +120,7 @@ if ( in_array( 'woocommerce/woocommerce.php', apply_filters( 'active_plugins', g
                 );
 
                 // call the Bitonic API and start the payment
-                $bitonicOrder = $bitonic->startPayment($options);
+                $bitonicOrder = $this->bitonic->startPayment($options);
 
                 if($bitonicOrder['result'] = 'success') {
 
@@ -136,9 +139,45 @@ if ( in_array( 'woocommerce/woocommerce.php', apply_filters( 'active_plugins', g
                 } else {
                     $woocommerce->add_error(__('Error creating Bitonic invoice. Please try again or try another payment method.'));
                 }
-
             }
 
+            function callback($transaction_id)
+            {
+                global $post;
+
+                // search for the order_id with the corresponding bitonic transaction id
+                $args = array(
+                    'post_type' => 'shop_order',
+                    'meta_key' => 'bitonic_transaction_id',
+                    'meta_value' => $transaction_id
+                );
+
+                $query = new WP_Query( $args );
+
+                while ( $query->have_posts() ) : $query->the_post();
+                    $orderId =  $post->ID;
+                endwhile;
+
+                $order = new WC_Order( $orderId );
+
+                $bitonicTransactionStatus = $this->bitonic->checkTransactionStatus($transaction_id);
+
+                if($bitonicTransactionStatus['result'] == 'success') {
+                    switch($bitonicTransactionStatus['status']) {
+                        case 'open':
+                            break;
+                        case 'paid':
+                        case 'confirmed':
+                            $order->payment_complete();
+                            break;
+                        case 'expired':
+                        case 'failure':
+                        case 'cancelled':
+                            $order->cancel_order();
+                            break;
+                    }
+                }
+            }
         }
     }
 
